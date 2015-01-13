@@ -12,6 +12,10 @@
 bin/
 gen/
 
+
+# Android Studio
+.idea/
+
 # Gradle files
 .gradle/
 build/
@@ -24,3 +28,6 @@ proguard/
 
 # Log Files
 *.log
+
+# Mac OS file
+.DS_Store

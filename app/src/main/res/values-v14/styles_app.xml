@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="AppTheme" parent="@style/Theme.AppCompat.Light">
+        <item name="android:actionBarStyle">@style/ActionBar.Solid.App</item>
+
+        <item name="actionBarStyle">@style/ActionBar.Solid.App</item>
+    </style>
+
+    <style name="ActionBar.Solid.App" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
+        <item name="android:background">@color/actionbar_background</item>
+        <item name="background">@color/actionbar_background</item>
+
+        <item name="android:titleTextStyle">@style/ActionBar.TitleText</item>
+        <item name="titleTextStyle">@style/ActionBar.TitleText</item>
+    </style>
+</resources>
