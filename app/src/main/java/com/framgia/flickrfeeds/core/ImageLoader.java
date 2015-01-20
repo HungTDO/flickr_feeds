@@ -39,6 +39,8 @@ public class ImageLoader {
     private static ImageLoader instance = null;
 
     /**
+     * Initial ImageLoader option.
+     * This should be call from Application class.
      * @param context
      * @param cacheParams
      * @return
@@ -56,9 +58,9 @@ public class ImageLoader {
     }
 
     /**
-     * @param imageWidth
-     * @param imageHeight
-     * @return
+     * Get ImageLoader singleton instance.
+     *
+     * @return singleton instance.
      */
     public static ImageLoader getInstance() {
         if (instance == null) {
@@ -78,14 +80,18 @@ public class ImageLoader {
     }
 
     /**
-     * @param imageWidth
-     * @param imageHeight
+     * Set image size by longest size.
+     *
+     * @param longestSize
+     * @return
      */
     public ImageLoader setImageSize(int longestSize) {
         return setImageSize(longestSize, longestSize);
     }
 
     /**
+     * Set image size.
+     *
      * @param imageWidth
      * @param imageHeight
      */
@@ -109,7 +115,8 @@ public class ImageLoader {
         BitmapDrawable value = null;
 
         if (imageCache != null) {
-            value = imageCache.getBitmapFromMemCache(String.valueOf(uri));
+            // Caching BitmapDrawable with exactly size.
+            value = imageCache.getBitmapFromMemCache(String.valueOf(uri) + imageWidth + imageHeight);
         }
 
         if (value != null) {
@@ -206,17 +213,7 @@ public class ImageLoader {
                 }
             }
 
-            // If the image cache is available and this task has not been cancelled by another
-            // thread and the ImageView that was originally bound to this task is still bound back
-            // to this task and our "exit early" flag is not set then try and fetch the bitmap from
-            // the cache
-            if (imageCache != null && !isCancelled() && getAttachedImageView() != null
-                    && !mExitTasksEarly) {
-                drawable = imageCache.getBitmapFromMemCache(dataString);
-            }
-
-            if (drawable == null)
-                bitmap = decodeSampledBitmapFromFile(dataString, imageWidth, imageHeight);
+            bitmap = decodeSampledBitmapFromFile(dataString, imageWidth, imageHeight);
 
             // If the bitmap was processed and the image cache is available, then add the processed
             // bitmap to the cache for future use. Note we don't check if the task was cancelled
@@ -233,7 +230,8 @@ public class ImageLoader {
                 }
 
                 if (imageCache != null) {
-                    imageCache.addBitmapToCache(dataString, drawable);
+                    // Add image size to cache, caching different bitmap size
+                    imageCache.addBitmapToCache(dataString + imageWidth + imageHeight, drawable);
                 }
             }
             return drawable;
@@ -383,11 +381,6 @@ public class ImageLoader {
                     && (halfWidth / inSampleSize) > reqWidth) {
                 inSampleSize *= 2;
             }
-
-            long totalPixels = width * height / inSampleSize;
-
-            // Anything more than 2x the requested pixels we'll sample down further
-            final long totalReqPixelsCap = reqWidth * reqHeight * 2;
 
             // Anything more than 2x the requested pixels, sample down further
             inSampleSize *= 2;

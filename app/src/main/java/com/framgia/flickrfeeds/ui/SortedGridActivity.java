@@ -36,7 +36,7 @@ public abstract class SortedGridActivity extends ActionBarActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_gallery_picker);
+        setContentView(R.layout.gallery_picker);
 
         activityTitle = getResources().getString(R.string.app_name);
 

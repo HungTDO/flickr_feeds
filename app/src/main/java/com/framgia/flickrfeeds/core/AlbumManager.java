@@ -20,13 +20,16 @@ public class AlbumManager {
             Media.BUCKET_DISPLAY_NAME,
             Media.DATE_TAKEN,
             Media.SIZE,
+            Media.MIME_TYPE,
             Media.DATA
     };
 
     // Group by bucket_id.
     public static String GALLERY_SELECTION = "1) GROUP BY 2,(2";
-
+    // Select all image in album
     public static String ALBUM_SELECTION = Media.BUCKET_ID + "=?";
+    // Select all image detail
+    public static String IMAGE_SELECTION = Media._ID + "=?";
 
     // Order by max date taken
     public static String DATETAKEN_ORDER_BY_DESC = Media.DATE_TAKEN + " DESC";
@@ -37,12 +40,12 @@ public class AlbumManager {
     /**
      * Get list of album
      *
-     * @param context
-     * @return
+     * @param cr content resolver
+     * @return list of album.
      */
     public static List<BaseImage> getAlbumList(ContentResolver cr, String[] projection,
                                                String selection, String[] selectionArgs, String sortOrder) {
-        List<BaseImage> albums = new ArrayList<BaseImage>();
+        List<BaseImage> list = new ArrayList<BaseImage>();
 
         Uri uri = Media.EXTERNAL_CONTENT_URI;
 
@@ -50,25 +53,30 @@ public class AlbumManager {
 
         if (cursor != null) {
             while (cursor.moveToNext()) {
-                BaseImage album = generateObjectFromCursor(cursor);
-                albums.add(album);
+                BaseImage image = generateBaseImageFromCursor(cursor);
+                list.add(image);
             }
             cursor.close();
         }
-        return albums;
+        return list;
     }
 
+
     /**
+     * Generate BaseImage from cursor.
+     *
      * @param cursor
      * @return
      */
-    private static BaseImage generateObjectFromCursor(Cursor cursor) {
+    private static BaseImage generateBaseImageFromCursor(Cursor cursor) {
         int idColumn = cursor.getColumnIndex(Media._ID);
         int bucketIdColumn = cursor.getColumnIndex(Media.BUCKET_ID);
         int bucketNameColumn = cursor.getColumnIndex(Media.BUCKET_DISPLAY_NAME);
 
         int dateColumn = cursor.getColumnIndex(Media.DATE_TAKEN);
+
         int sizeColumn = cursor.getColumnIndex(Media.SIZE);
+        int mimeColumn = cursor.getColumnIndex(Media.MIME_TYPE);
         int dataColumn = cursor.getColumnIndex(Media.DATA);
 
         BaseImage image = new BaseImage();
@@ -79,6 +87,7 @@ public class AlbumManager {
         image.setBucketName(cursor.getString(bucketNameColumn));
 
         image.setDateTaken(cursor.getString(dateColumn));
+        image.setMimeType(cursor.getString(mimeColumn));
         image.setId(cursor.getString(idColumn));
         image.setSize(cursor.getString(sizeColumn));
 
