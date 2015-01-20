@@ -76,8 +76,7 @@ public class GridImageAdapter extends BaseAdapter {
         int imageSize = context.getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size);
 
         ImageView thumb = (ImageView) convertView.findViewById(R.id.thumbnail);
-        ImageLoader.getInstance().setImageSize(imageSize, imageSize);
-        ImageLoader.getInstance().displayImage(item.getDataUri(), thumb);
+        ImageLoader.getInstance().setImageSize(imageSize, imageSize).displayImage(item.getDataUri(), thumb);
 
         if (isGallery) viewHolder.title.setText(item.getBucketName());
         else viewHolder.title.setVisibility(View.GONE);

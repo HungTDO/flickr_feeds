@@ -13,6 +13,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
 
 import com.framgia.flickrfeeds.R;
+import com.framgia.flickrfeeds.core.Album;
 import com.framgia.flickrfeeds.core.AlbumManager;
 import com.framgia.flickrfeeds.core.BaseImage;
 
@@ -20,11 +21,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A simple {@link Fragment} subclass.
+ * A simple {@link android.support.v4.app.Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link GridImage.OnFragmentInteractionListener} interface
+ * {@link com.framgia.flickrfeeds.ui.GridImage.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link GridImage#newInstance} factory method to
+ * Use the {@link com.framgia.flickrfeeds.ui.GridImage#newInstance} factory method to
  * create an instance of this fragment.
  * Created by quannh on 1/9/15.
  */
@@ -126,7 +127,7 @@ public class GridImage extends Fragment implements OnItemClickListener {
                     AlbumManager.GALLERY_SELECTION, null, orderBy);
         } else if (viewType == ALBUM_VIEW) {
             listItem = AlbumManager.getAlbumList(getActivity().getContentResolver(), AlbumManager.PROJECTION,
-                    AlbumManager.ALBUM_SELECTION, new String[] {albumId}, orderBy);
+                    AlbumManager.ALBUM_SELECTION, new String[]{albumId}, orderBy);
         }
 
         // setup gridview
@@ -165,6 +166,12 @@ public class GridImage extends Fragment implements OnItemClickListener {
         if (getActivity() instanceof GalleryPicker) {
             Intent intent = new Intent(getActivity(), AlbumDetail.class);
             intent.putExtra(AlbumDetail.ALBUM, listItem.get(position));
+            getActivity().startActivity(intent);
+        } else {
+            Intent intent = new Intent(getActivity(), ImageViewPager.class);
+            Album album = new Album(listItem);
+            intent.putExtra(ImageViewPager.ALBUM, album);
+            intent.putExtra(ImageViewPager.POSITION, position);
             getActivity().startActivity(intent);
         }
     }

@@ -2,7 +2,6 @@ package com.framgia.flickrfeeds.core;
 
 import android.annotation.TargetApi;
 import android.graphics.Bitmap;
-import android.graphics.Bitmap.CompressFormat;
 import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -28,10 +27,6 @@ public class ImageCache {
     // Default memory cache size in kilobytes
     private static final int DEFAULT_MEM_CACHE_SIZE = 1024 * 5; // 5MB
 
-    // Compression settings when writing images to disk cache
-    private static final CompressFormat DEFAULT_COMPRESS_FORMAT = CompressFormat.JPEG;
-    private static final int DEFAULT_COMPRESS_QUALITY = 70;
-
     // Constants to easily toggle various caches
     private static final boolean DEFAULT_MEM_CACHE_ENABLED = true;
 
@@ -41,10 +36,7 @@ public class ImageCache {
     private Set<SoftReference<Bitmap>> reusableBitmaps;
 
     /**
-     * Create a new ImageCache object using the specified parameters. This should not be
-     * called directly by other classes, instead use
-     * {@link ImageCache#getInstance(android.support.v4.app.FragmentManager, ImageCacheParams)} to fetch an ImageCache
-     * instance.
+     * Create a new ImageCache object using the specified parameters.
      *
      * @param cacheParams The cache parameters to use to initialize the cache
      */
@@ -53,10 +45,8 @@ public class ImageCache {
     }
 
     /**
-     * Return an {@link ImageCache} instance. A {@link RetainFragment} is used to retain the
-     * ImageCache object across configuration changes such as a change in device orientation.
+     * Return an {@link ImageCache} instance.
      *
-     * @param fragmentManager The fragment manager to use when dealing with the retained fragment.
      * @param cacheParams     The cache parameters to use if the ImageCache needs instantiation.
      * @return An existing retained ImageCache object or a new one if one did not exist
      */
@@ -80,15 +70,17 @@ public class ImageCache {
         // Set up memory cache
         if (this.cacheParams.memoryCacheEnabled) {
 
-            // If we're running on Honeycomb or newer, create a set of reusable bitmaps that can be
-            // populated into the inBitmap field of BitmapFactory.Options. Note that the set is
-            // of SoftReferences which will actually not be very effective due to the garbage
-            // collector being aggressive clearing Soft/WeakReferences. A better approach
-            // would be to use a strongly references bitmaps, however this would require some
-            // balancing of memory usage between this set and the bitmap LruCache. It would also
-            // require knowledge of the expected size of the bitmaps. From Honeycomb to JellyBean
-            // the size would need to be precise, from KitKat onward the size would just need to
-            // be the upper bound (due to changes in how inBitmap can re-use bitmaps).
+            /*
+            If we're running on Honeycomb or newer, create a set of reusable bitmaps that can be
+            populated into the inBitmap field of BitmapFactory.Options. Note that the set is
+            of SoftReferences which will actually not be very effective due to the garbage
+            collector being aggressive clearing Soft/WeakReferences. A better approach
+            would be to use a strongly references bitmaps, however this would require some
+            balancing of memory usage between this set and the bitmap LruCache. It would also
+            require knowledge of the expected size of the bitmaps. From Honeycomb to JellyBean
+            the size would need to be precise, from KitKat onward the size would just need to
+            be the upper bound (due to changes in how inBitmap can re-use bitmaps).
+            */
             if (Utils.hasHoneycomb()) {
                 reusableBitmaps =
                         Collections.synchronizedSet(new HashSet<SoftReference<Bitmap>>());
@@ -206,7 +198,7 @@ public class ImageCache {
     }
 
     /**
-     * Clears both the memory and disk cache associated with this ImageCache object. Note that
+     * Clears both the memory cache associated with this ImageCache object. Note that
      * this includes disk access so this should not be executed on the main/UI thread.
      */
     public void clearCache() {
@@ -243,12 +235,12 @@ public class ImageCache {
          *
          * @param percent Percent of available app memory to use to size memory cache
          */
-        public void setMemCacheSizePercent(float percent) {
-            if (percent < 0.01f || percent > 0.8f) {
+        public void setMemCacheSizePercent(float percentMemCached) {
+            if (percentMemCached < 0.01f || percentMemCached > 0.8f) {
                 throw new IllegalArgumentException("setMemCacheSizePercent - percent must be "
                         + "between 0.01 and 0.8 (inclusive)");
             }
-            memCacheSize = Math.round(percent * Runtime.getRuntime().maxMemory() / 1024);
+            memCacheSize = Math.round(percentMemCached * Runtime.getRuntime().maxMemory() / 1024);
         }
     }
 

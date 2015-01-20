@@ -7,9 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Created by quannh on 1/14/15.
- */
+
 public class GalleryPicker extends SortedGridActivity {
     private static final String TAG = GalleryPicker.class.getSimpleName();
 

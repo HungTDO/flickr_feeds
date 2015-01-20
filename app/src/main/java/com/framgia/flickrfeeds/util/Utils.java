@@ -5,9 +5,12 @@ import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.util.DisplayMetrics;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 /**
-* Created by quannh on 1/8/15.
-*/
+ * Created by quannh on 1/8/15.
+ */
 public class Utils {
     private static final String TAG = "Util";
 
@@ -23,7 +26,7 @@ public class Utils {
      * @param activity
      * @return
      */
-    public int getLongestDisplay(Activity activity) {
+    public static int getLongestDisplay(Activity activity) {
         // Fetch screen height and width, to use as our max size when loading images as this
         // activity runs full screen
         final DisplayMetrics displayMetrics = new DisplayMetrics();
@@ -39,6 +42,31 @@ public class Utils {
         final int longest = (height > width ? height : width) / 2;
 
         return longest;
+    }
+
+    /**
+     * Convert time from millisecond to date.
+     * @param timeStamp mililseconds since Jan 1, 1970 GMT
+     * @return time format HH:mm:ss\nyyyy dd MMM
+     */
+    public static String formatTimestamp(String timeStamp) {
+        SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss\nyyyy dd MMM");
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(Long.parseLong(timeStamp));
+        return formatter.format(calendar.getTime());
+    }
+
+    /**
+     * Convert file size from byte to human readable size.
+     * @param bytes
+     * @return
+     */
+    public static String convertByteToHumanReadable(long bytes) {
+        int unit = 1024;
+        if (bytes < unit) return bytes + " B";
+        int exp = (int) (Math.log(bytes) / Math.log(unit));
+        String pre = ("KMGTPE").charAt(exp-1) + ("i");
+        return String.format("%.1f %sB", bytes / Math.pow(unit, exp), pre);
     }
 
     public static boolean hasGingerbread() {
