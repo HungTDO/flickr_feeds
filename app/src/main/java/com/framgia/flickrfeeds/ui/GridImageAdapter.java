@@ -9,7 +9,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.framgia.flickrfeeds.R;
-import com.framgia.flickrfeeds.core.Album;
+import com.framgia.flickrfeeds.core.BaseImage;
+import com.framgia.flickrfeeds.core.ImageLoader;
 
 import java.util.List;
 
@@ -19,25 +20,24 @@ import java.util.List;
 public class GridImageAdapter extends BaseAdapter {
     private final static String TAG = "GridImageAdapter";
 
-    private List<Album> images;
-    private LayoutInflater inflater;
+    private List<BaseImage> images;
+    private Context context;
 
-    public GridImageAdapter(Context context, List<Album> images) {
-        this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    private boolean isGallery = false;
+
+    public GridImageAdapter(Context context, List<BaseImage> images) {
+        this.context = context;
         this.images = images;
-    }
-
-    public void addItem(Album image) {
-        images.add(image);
     }
 
     public void updateDisplay() {
         notifyDataSetChanged();
     }
 
-    public void clear() {
-        images.clear();
+    public void setGallery(boolean isGallery) {
+        this.isGallery = isGallery;
     }
+
 
     @Override
     public int getCount() {
@@ -60,6 +60,7 @@ public class GridImageAdapter extends BaseAdapter {
 
         if (convertView == null) {
             // inflate the GridView item layout
+            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = inflater.inflate(R.layout.gridview_item, parent, false);
 
             // initialize the view holder
@@ -71,13 +72,15 @@ public class GridImageAdapter extends BaseAdapter {
         }
 
         // update the item view
-        Album item = images.get(position);
+        BaseImage item = images.get(position);
+        int imageSize = context.getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size);
 
         ImageView thumb = (ImageView) convertView.findViewById(R.id.thumbnail);
-        thumb.setImageBitmap(item.getThumb());
+        ImageLoader.getInstance().setImageSize(imageSize, imageSize);
+        ImageLoader.getInstance().displayImage(item.getDataUri(), thumb);
 
-        viewHolder.title.setText(item.getName());
-
+        if (isGallery) viewHolder.title.setText(item.getBucketName());
+        else viewHolder.title.setVisibility(View.GONE);
         return convertView;
     }
 

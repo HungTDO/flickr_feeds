@@ -10,10 +10,11 @@ import java.util.List;
 /**
  * Created by quannh on 1/14/15.
  */
-public class GalleryPicker extends SortedGridActivity {
-    private static final String TAG = GalleryPicker.class.getSimpleName();
+public class AlbumDetail extends SortedGridActivity {
+    private static final String TAG = AlbumDetail.class.getSimpleName();
+    public static final String ALBUM = "AlbumDetail.album";
 
-    protected int NUMBER_OF_COLUMN = 2;
+    protected int NUMBER_OF_COLUMN = 3;
 
     @Override
     protected int getNumberOfColumns() {
@@ -27,7 +28,7 @@ public class GalleryPicker extends SortedGridActivity {
 
     @Override
     protected List<String> getSortTypeList() {
-        return new ArrayList<String>(Arrays.asList(getResources().getStringArray(R.array.gallery_sort_type)));
+        return new ArrayList<String>(Arrays.asList(getResources().getStringArray(R.array.album_sort_type)));
     }
 
     @Override
@@ -39,6 +40,8 @@ public class GalleryPicker extends SortedGridActivity {
                 return AlbumManager.DATETAKEN_ORDER_BY_ASC;
             case 2:
                 return AlbumManager.BUCKET_NAME_ORDER_BY;
+            case 3:
+                return AlbumManager.DATA_SIZE_ORDER_BY;
             default:
                 return AlbumManager.DATETAKEN_ORDER_BY_DESC;
         }
@@ -46,11 +49,11 @@ public class GalleryPicker extends SortedGridActivity {
 
     @Override
     protected int getViewType() {
-        return GridImage.GALLERY_VIEW;
+        return GridImage.ALBUM_VIEW;
     }
 
     @Override
     protected String getAlbumId() {
-        return new String();
+        return image.getBucketId();
     }
 }

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.Flickerfeeds" parent="@style/Theme.AppCompat.Light">
+        <item name="android:actionBarItemBackground">@drawable/selectable_background_flickerfeeds</item>
+        <item name="android:popupMenuStyle">@style/PopupMenu.Flickerfeeds</item>
+        <item name="android:dropDownListViewStyle">@style/DropDownListView.Flickerfeeds</item>
+        <item name="android:actionDropDownStyle">@style/DropDownNav.Flickerfeeds</item>
+        <item name="android:actionBarStyle">@style/ActionBar.Solid.Flickerfeeds</item>
+
+        <item name="actionBarItemBackground">@drawable/selectable_background_flickerfeeds</item>
+        <item name="popupMenuStyle">@style/PopupMenu.Flickerfeeds</item>
+        <item name="dropDownListViewStyle">@style/DropDownListView.Flickerfeeds</item>
+        <item name="actionDropDownStyle">@style/DropDownNav.Flickerfeeds</item>
+        <item name="actionBarStyle">@style/ActionBar.Solid.Flickerfeeds</item>
+    </style>
+
+    <style name="ActionBar.Solid.Flickerfeeds" parent="@style/Widget.AppCompat.Light.ActionBar.Solid">
+        <item name="background">@drawable/ab_background_textured_flickerfeeds</item>
+        <item name="displayOptions">showHome|useLogo</item>
+
+        <item name="android:background">@drawable/ab_background_textured_flickerfeeds</item>
+        <item name="android:displayOptions">showHome|useLogo</item>
+    </style>
+
+    <!-- this style is only referenced in a Light.DarkActionBar based theme -->
+    <style name="Theme.Flickerfeeds.Widget" parent="@style/Theme.AppCompat">
+        <item name="popupMenuStyle">@style/PopupMenu.Flickerfeeds</item>
+        <item name="dropDownListViewStyle">@style/DropDownListView.Flickerfeeds</item>
+
+        <item name="android:popupMenuStyle">@style/PopupMenu.Flickerfeeds</item>
+        <item name="android:dropDownListViewStyle">@style/DropDownListView.Flickerfeeds</item>
+    </style>
+
+</resources>
