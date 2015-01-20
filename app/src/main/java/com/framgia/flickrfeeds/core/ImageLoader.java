@@ -102,12 +102,41 @@ public class ImageLoader {
     }
 
     /**
-     * /**
+     * Callback for ImageLoader.
+     */
+    public static interface LoaderListener {
+        /**
+         * Called when image loaded.
+         */
+        public void onLoaderComplete();
+    }
+
+    public static class SimpleLoaderListener implements LoaderListener {
+
+        @Override
+        public void onLoaderComplete() {
+            // Do nothing
+        }
+    }
+
+    /**
+     * Display image from uri path to imageView.
      *
      * @param uri
      * @param imageView
      */
     public void displayImage(Uri uri, ImageView imageView) {
+        LoaderListener listener = new SimpleLoaderListener();
+        displayImage(uri, imageView, listener);
+    }
+
+    /**
+     * Display image from uri path to imageView.
+     *
+     * @param uri
+     * @param imageView
+     */
+    public void displayImage(Uri uri, ImageView imageView, LoaderListener listener) {
         if (uri == null) {
             return;
         }
@@ -123,7 +152,7 @@ public class ImageLoader {
             // Bitmap found in memory cache
             imageView.setImageDrawable(value);
         } else if (cancelPotentialWork(uri, imageView)) {
-            final BitmapProcessor task = new BitmapProcessor(uri, imageView);
+            final BitmapProcessor task = new BitmapProcessor(uri, imageView, listener);
             final AsyncDrawable asyncDrawable =
                     new AsyncDrawable(resource, null, task);
             imageView.setImageDrawable(asyncDrawable);
@@ -186,11 +215,13 @@ public class ImageLoader {
      */
     private class BitmapProcessor extends AsyncTask<Void, Void, BitmapDrawable> {
         private Uri uri;
+        private LoaderListener listener;
         private final WeakReference<ImageView> imageViewReference;
 
-        public BitmapProcessor(Uri uri, ImageView imageView) {
+        public BitmapProcessor(Uri uri, ImageView imageView, LoaderListener listener) {
             this.uri = uri;
             this.imageViewReference = new WeakReference<ImageView>(imageView);
+            this.listener = listener;
         }
 
         /**
@@ -251,6 +282,7 @@ public class ImageLoader {
             if (drawable != null && imageView != null) {
                 setImageDrawable(imageView, drawable);
             }
+            listener.onLoaderComplete();
         }
 
         /**

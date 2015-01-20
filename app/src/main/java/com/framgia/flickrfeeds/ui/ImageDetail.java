@@ -5,33 +5,37 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.framgia.flickrfeeds.R;
 import com.framgia.flickrfeeds.core.BaseImage;
 import com.framgia.flickrfeeds.core.ImageLoader;
+import com.framgia.flickrfeeds.core.ImageLoader.LoaderListener;
 import com.framgia.flickrfeeds.util.Utils;
+
+import uk.co.senab.photoview.PhotoViewAttacher;
+import uk.co.senab.photoview.PhotoViewAttacher.OnViewTapListener;
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link com.framgia.flickrfeeds.ui.ImageDetail.OnImageFragmentListener} interface
+ * {@link com.framgia.flickrfeeds.ui.ImageDetail.OnImageTapListener} interface
  * to handle interaction events.
  * Use the {@link ImageDetail#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ImageDetail extends Fragment {
+public class ImageDetail extends Fragment implements LoaderListener {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_IMAGE = "image";
 
     private BaseImage image;
 
-    private OnImageFragmentListener listener;
+    private OnImageTapListener listener;
 
     private View rootView;
     private ImageView imageView;
+    private PhotoViewAttacher attacher;
 
     /**
      * Use this factory method to create a new instance of
@@ -71,14 +75,20 @@ public class ImageDetail extends Fragment {
         // Display image with full size
         int imageSize = Utils.getLongestDisplay(getActivity());
         ImageLoader.getInstance().setImageSize(imageSize).displayImage(image.getDataUri(),
-                imageView);
+                imageView, this);
 
-        imageView.setOnClickListener(new OnClickListener() {
+        // Attach a PhotoViewAttacher, which takes care of all of the zooming functionality.
+        attacher = new PhotoViewAttacher(imageView);
+
+        // Toggle footer control when on tap to image.
+        attacher.setOnViewTapListener(new OnViewTapListener() {
             @Override
-            public void onClick(View v) {
-                listener.onFragmentInteraction();
+            public void onViewTap(View view, float x, float y) {
+                if (isAdded())
+                    listener.onFragmentInteraction();
             }
         });
+
         return rootView;
     }
 
@@ -86,7 +96,7 @@ public class ImageDetail extends Fragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            listener = (OnImageFragmentListener) activity;
+            listener = (OnImageTapListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
                     + " must implement OnFragmentInteractionListener");
@@ -99,6 +109,12 @@ public class ImageDetail extends Fragment {
         listener = null;
     }
 
+    @Override
+    public void onLoaderComplete() {
+        // update attacher
+        attacher.update();
+    }
+
 
     /**
      * This interface must be implemented by activities that contain this
@@ -106,7 +122,7 @@ public class ImageDetail extends Fragment {
      * to the activity and potentially other fragments contained in that
      * activity.
      */
-    public interface OnImageFragmentListener {
+    public interface OnImageTapListener {
         public void onFragmentInteraction();
     }
 

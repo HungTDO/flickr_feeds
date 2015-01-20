@@ -25,7 +25,7 @@ import com.framgia.flickrfeeds.R;
 import com.framgia.flickrfeeds.core.Album;
 import com.framgia.flickrfeeds.core.BaseImage;
 import com.framgia.flickrfeeds.core.ImageLoader;
-import com.framgia.flickrfeeds.ui.ImageDetail.OnImageFragmentListener;
+import com.framgia.flickrfeeds.ui.ImageDetail.OnImageTapListener;
 import com.framgia.flickrfeeds.util.Utils;
 
 import java.io.IOException;
@@ -36,7 +36,7 @@ import java.util.List;
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
-public class ImageViewPager extends FragmentActivity implements OnImageFragmentListener, OnClickListener, OnPageChangeListener {
+public class ImageViewPager extends FragmentActivity implements OnImageTapListener, OnClickListener, OnPageChangeListener {
 
     public static final String ALBUM = "ImageDetail.album";
     public static final String POSITION = "ImageDetail.position";

@@ -38,63 +38,77 @@ public class AlbumManager {
     public static String DATA_SIZE_ORDER_BY = Media.SIZE + " ASC";
 
     /**
-     * Get list of album
+     * Get album list from device, both external and internal storage.
      *
-     * @param cr content resolver
-     * @return list of album.
+     * @param cr Content Reolver for query.
+     * @param projection
+     * @param selection
+     * @param selectionArgs
+     * @param sortOrder
+     * @return list of Album.
      */
     public static List<BaseImage> getAlbumList(ContentResolver cr, String[] projection,
                                                String selection, String[] selectionArgs, String sortOrder) {
         List<BaseImage> list = new ArrayList<BaseImage>();
 
-        Uri uri = Media.EXTERNAL_CONTENT_URI;
+        // Get all album from external and internal storage
+        Uri externalUri = Media.EXTERNAL_CONTENT_URI;
+        list.addAll(getAlbumListFromUri(cr, externalUri, projection, selection, selectionArgs, sortOrder));
 
+        Uri internalUri = Media.INTERNAL_CONTENT_URI;
+        list.addAll(getAlbumListFromUri(cr, internalUri, projection, selection, selectionArgs, sortOrder));
+
+        return list;
+    }
+
+    /**
+     * Get album list from URI.
+     *
+     * @param cr Content Reolver for query.
+     * @param uri Content Provider URI
+     * @param projection
+     * @param selection
+     * @param selectionArgs
+     * @param sortOrder
+     * @return list of Album.
+     */
+    private static List<BaseImage> getAlbumListFromUri(ContentResolver cr, Uri uri, String[] projection,
+                                                       String selection, String[] selectionArgs, String sortOrder) {
+        List<BaseImage> list = new ArrayList<BaseImage>();
         Cursor cursor = cr.query(uri, projection, selection, selectionArgs, sortOrder);
 
         if (cursor != null) {
+            // Image columns indexs
+            int idColumn = cursor.getColumnIndex(Media._ID);
+            int bucketIdColumn = cursor.getColumnIndex(Media.BUCKET_ID);
+            int bucketNameColumn = cursor.getColumnIndex(Media.BUCKET_DISPLAY_NAME);
+            int dateColumn = cursor.getColumnIndex(Media.DATE_TAKEN);
+            int sizeColumn = cursor.getColumnIndex(Media.SIZE);
+            int mimeColumn = cursor.getColumnIndex(Media.MIME_TYPE);
+            int dataColumn = cursor.getColumnIndex(Media.DATA);
+
+            // Iterate all data over rows.
             while (cursor.moveToNext()) {
-                BaseImage image = generateBaseImageFromCursor(cursor);
+                BaseImage image = new BaseImage();
+
+                // set image detail
+                image.setId(cursor.getString(idColumn));
+                image.setBucketId(cursor.getString(bucketIdColumn));
+                image.setBucketName(cursor.getString(bucketNameColumn));
+
+                image.setDateTaken(cursor.getString(dateColumn));
+                image.setMimeType(cursor.getString(mimeColumn));
+                image.setId(cursor.getString(idColumn));
+                image.setSize(cursor.getString(sizeColumn));
+
+                // set first image as album cover
+                String thumbnailPath = cursor.getString(dataColumn);
+                image.setDataUri(Uri.parse(thumbnailPath));
+
                 list.add(image);
             }
             cursor.close();
         }
         return list;
-    }
-
-
-    /**
-     * Generate BaseImage from cursor.
-     *
-     * @param cursor
-     * @return
-     */
-    private static BaseImage generateBaseImageFromCursor(Cursor cursor) {
-        int idColumn = cursor.getColumnIndex(Media._ID);
-        int bucketIdColumn = cursor.getColumnIndex(Media.BUCKET_ID);
-        int bucketNameColumn = cursor.getColumnIndex(Media.BUCKET_DISPLAY_NAME);
-
-        int dateColumn = cursor.getColumnIndex(Media.DATE_TAKEN);
-
-        int sizeColumn = cursor.getColumnIndex(Media.SIZE);
-        int mimeColumn = cursor.getColumnIndex(Media.MIME_TYPE);
-        int dataColumn = cursor.getColumnIndex(Media.DATA);
-
-        BaseImage image = new BaseImage();
-
-        // set image detail
-        image.setId(cursor.getString(idColumn));
-        image.setBucketId(cursor.getString(bucketIdColumn));
-        image.setBucketName(cursor.getString(bucketNameColumn));
-
-        image.setDateTaken(cursor.getString(dateColumn));
-        image.setMimeType(cursor.getString(mimeColumn));
-        image.setId(cursor.getString(idColumn));
-        image.setSize(cursor.getString(sizeColumn));
-
-        // set first image as album cover
-        String thumbnailPath = cursor.getString(dataColumn);
-        image.setDataUri(Uri.parse(thumbnailPath));
-
-        return image;
     }
 }
