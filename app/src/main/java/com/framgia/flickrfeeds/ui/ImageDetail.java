@@ -103,6 +103,19 @@ public class ImageDetail extends Fragment implements LoaderListener {
         }
     }
 
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        ImageLoader.getInstance().setExitTasksEarly(false);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        ImageLoader.getInstance().setExitTasksEarly(true);
+    }
+
     @Override
     public void onDetach() {
         super.onDetach();
