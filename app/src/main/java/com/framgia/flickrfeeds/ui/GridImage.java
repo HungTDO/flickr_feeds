@@ -16,6 +16,7 @@ import com.framgia.flickrfeeds.R;
 import com.framgia.flickrfeeds.core.Album;
 import com.framgia.flickrfeeds.core.AlbumManager;
 import com.framgia.flickrfeeds.core.BaseImage;
+import com.framgia.flickrfeeds.core.ImageLoader;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -159,6 +160,20 @@ public class GridImage extends Fragment implements OnItemClickListener {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        ImageLoader.getInstance().setExitTasksEarly(false);
+        adapter.updateDisplay();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        ImageLoader.getInstance().setPauseWork(false);
+        ImageLoader.getInstance().setExitTasksEarly(true);
     }
 
     @Override

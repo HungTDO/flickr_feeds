@@ -1,12 +1,16 @@
 package com.framgia.flickrfeeds.ui;
 
 import android.content.Context;
+import android.database.ContentObserver;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.provider.MediaStore;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBar.OnNavigationListener;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -27,11 +31,17 @@ import java.util.List;
  */
 public abstract class SortedGridActivity extends ActionBarActivity
         implements OnFragmentInteractionListener, OnNavigationListener {
+    private static final String TAG = SortedGridActivity.class.getSimpleName();
+
     protected ActionBar actionBar;
     protected FragmentManager fragmentManager;
 
     protected String activityTitle;
     protected BaseImage image;
+
+    Handler handler = new Handler();  // handler for the main thread
+    ContentObserver contentObserver;
+    private int position;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +62,34 @@ public abstract class SortedGridActivity extends ActionBarActivity
         fragmentManager = getSupportFragmentManager();
 
         createActionbarDropdownMenu();
+
+        contentObserver = new ContentObserver(handler) {
+            @Override
+            public void onChange(boolean selfChange) {
+                Log.i(TAG, "Content change");
+                refresh();
+            }
+        };
+    }
+
+    protected void refresh() {
+        onSortTypeChange(position);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        getContentResolver().registerContentObserver(
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                true, contentObserver);
+        Log.i(TAG, "ContentObserver registed");
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        getContentResolver().unregisterContentObserver(contentObserver);
+        Log.i(TAG, "ContentObserver unregisted");
     }
 
     /**
@@ -93,6 +131,7 @@ public abstract class SortedGridActivity extends ActionBarActivity
 
     @Override
     public boolean onNavigationItemSelected(int position, long id) {
+        this.position = position;
         return onSortTypeChange(position);
     }
 

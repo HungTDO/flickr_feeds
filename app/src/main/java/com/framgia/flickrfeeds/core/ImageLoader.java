@@ -160,7 +160,11 @@ public class ImageLoader {
         }
     }
 
-
+    /**
+     * Set early exit for task.
+     *
+     * @param exitTasksEarly
+     */
     public void setExitTasksEarly(boolean exitTasksEarly) {
         mExitTasksEarly = exitTasksEarly;
         setPauseWork(false);
